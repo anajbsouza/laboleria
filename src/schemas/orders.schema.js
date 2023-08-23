@@ -1,6 +1,6 @@
 import joi, { string } from "joi";
 
-const orderSchema = ({
+const orderSchema = joi.object({
     clientId: joi.number().required(),
     cakeId: joi.number().required(),
     quantity: joi.number().required(),

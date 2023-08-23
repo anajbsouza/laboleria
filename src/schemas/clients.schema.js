@@ -1,8 +1,8 @@
-import joi, { string } from "joi";
+import joi from "joi";
 
-const clientSchema = ({
+const clientSchema = joi.object({
     name: joi.string().required(),
-    address: string().required(),
+    address: joi.string().required(),
     phone: joi.string().trim().length(11).pattern(/^\d+$/).required(),
 });
 
