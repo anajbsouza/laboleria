@@ -1,10 +1,12 @@
 import { Router } from "express";
 import { createOrder, getOrders, getOrdersById } from "../controllers/orders.controller.js";
+import { validateSchema } from "../middlewares/validateSchema.js";
+import orderSchema from "../schemas/orders.schema.js";
 
 const orderRouter = Router();
 
-orderRouter.post("/create-order", createOrder);
-orderRouter.get("/get-order", getOrders);
-orderRouter.get("/get-order-id", getOrdersById);
+orderRouter.post("/order", validateSchema(orderSchema), createOrder);
+orderRouter.get("/orders", getOrders);
+orderRouter.get("/orders/:id", getOrdersById);
 
 export default orderRouter;

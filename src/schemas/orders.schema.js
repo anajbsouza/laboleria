@@ -1,10 +1,9 @@
-import joi, { string } from "joi";
+import joi from "joi";
 
 const orderSchema = joi.object({
     clientId: joi.number().required(),
     cakeId: joi.number().required(),
-    quantity: joi.number().required(),
-    //createdAt
+    quantity: joi.number().min(1).max(4).required(),
     totalPrice: joi.number().required()
 });
 
