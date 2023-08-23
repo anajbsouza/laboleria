@@ -28,3 +28,31 @@ export async function getCakeById(cakeId) {
     }
 }
 
+
+export async function getOrdersDB(date) {
+    const dateFilter = date ? `WHERE o."createdAt"::DATE = $1` : "";
+    const values = date ? [date] : [];
+    
+    const result = await db.query(`
+        SELECT
+            c.id AS "clientId",
+            c.name AS "clientName",
+            c.address AS "clientAddress",
+            c.phone AS "clientPhone",
+            k.id AS "cakeId",
+            k.name AS "cakeName",
+            k.price AS "cakePrice",
+            k.description AS "cakeDescription",
+            k.image AS "cakeImage",
+            o.id AS "orderId",
+            o.createdat AS "createdAt",
+            o.quantity,
+            o.totalprice AS "totalPrice"
+        FROM orders o
+        JOIN clients c ON o.clientid = c.id
+        JOIN cakes k ON o.cakeid = k.id
+        ${dateFilter}
+    `, values);
+
+    return result.rows;
+}

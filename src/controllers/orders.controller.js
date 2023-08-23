@@ -1,5 +1,5 @@
 import { db } from "../database/database.connection.js";
-import { createOrderDB, getCakeById, getClientById } from "../repositories/orders.repository.js";
+import { createOrderDB, getCakeById, getClientById, getOrdersDB } from "../repositories/orders.repository.js";
 
 export async function createOrder(req, res) {
     const { clientId, cakeId, quantity, totalPrice } = req.body;
@@ -21,14 +21,42 @@ export async function createOrder(req, res) {
 
 export async function getOrders(req, res) {
     try {
-        console.log('oi');
+        const date = req.query.date;
+        const orders = await getOrdersDB(date);
+        
+        if (orders.length === 0) {
+            return res.status(404).json([]);
+        }
+
+        const formattedOrders = orders.map(order => ({
+            client: {
+                id: order.clientId,
+                name: order.clientName,
+                address: order.clientAddress,
+                phone: order.clientPhone,
+            },
+            cake: {
+                id: order.cakeId,
+                name: order.cakeName,
+                price: parseFloat(order.cakePrice),
+                description: order.cakeDescription,
+                image: order.cakeImage,
+            },
+            orderId: order.orderId,
+            createdAt: order.createdAt,
+            quantity: order.quantity,
+            totalPrice: parseFloat(order.totalPrice),
+        }));
+
+        res.status(200).json(formattedOrders);
     } catch (err) {
-        console.log(err)
+        console.log(err);
         res.status(500).send(err.message);
     }
 }
 
-export async function getOrdersById() {
+
+export async function getOrdersById(req, res) {
     try {
         console.log('oi');
     } catch (err) {
