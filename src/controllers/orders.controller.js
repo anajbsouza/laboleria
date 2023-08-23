@@ -1,6 +1,6 @@
 import { db } from "../database/database.connection.js";
 
-export async function createOrder() {
+export async function createOrder(req, res) {
     try {
         console.log('oi');
     } catch (err) {
@@ -9,7 +9,7 @@ export async function createOrder() {
     }
 }
 
-export async function getOrders() {
+export async function getOrders(req, res) {
     try {
         console.log('oi');
     } catch (err) {
