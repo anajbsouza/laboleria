@@ -45,7 +45,7 @@ export async function getOrdersDB(date) {
             k.description AS "cakeDescription",
             k.image AS "cakeImage",
             o.id AS "orderId",
-            o.createdat AS "createdAt",
+            o.createdat::DATE AS "createdAt",
             o.quantity,
             o.totalprice AS "totalPrice"
         FROM orders o
@@ -54,5 +54,36 @@ export async function getOrdersDB(date) {
         ${dateFilter}
     `, values);
 
-    return result.rows;
+    const formattedRows = result.rows.map(row => ({
+        ...row,
+        createdAt: row.createdAt.toISOString().split('T')[0] 
+    }));
+
+    return formattedRows;
+}
+
+
+export async function getOrderByIdDB(orderId) {
+    const result = await db.query(`
+        SELECT
+            c.id AS "clientId",
+            c.name AS "clientName",
+            c.address AS "clientAddress",
+            c.phone AS "clientPhone",
+            k.id AS "cakeId",
+            k.name AS "cakeName",
+            k.price AS "cakePrice",
+            k.description AS "cakeDescription",
+            k.image AS "cakeImage",
+            o.id AS "orderId",
+            to_char(o.createdat, 'YYYY-MM-DD HH24:MI') AS "createdAt",
+            o.quantity,
+            o.totalprice AS "totalPrice"
+        FROM orders o
+        JOIN clients c ON o.clientid = c.id
+        JOIN cakes k ON o.cakeid = k.id
+        WHERE o.id = $1
+    `, [orderId]);
+
+    return result.rows[0];
 }

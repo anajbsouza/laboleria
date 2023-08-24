@@ -1,5 +1,5 @@
 import { db } from "../database/database.connection.js";
-import { createOrderDB, getCakeById, getClientById, getOrdersDB } from "../repositories/orders.repository.js";
+import { createOrderDB, getCakeById, getClientById, getOrderByIdDB, getOrdersDB } from "../repositories/orders.repository.js";
 
 export async function createOrder(req, res) {
     const { clientId, cakeId, quantity, totalPrice } = req.body;
@@ -57,10 +57,38 @@ export async function getOrders(req, res) {
 
 
 export async function getOrdersById(req, res) {
+    const orderId = parseInt(req.params.id, 10);
+    
     try {
-        console.log('oi');
+        const order = await getOrderByIdDB(orderId);
+        
+        if (!order) {
+            return res.status(404).send('Order not found');
+        }
+
+        const formattedOrder = {
+            client: {
+                id: order.clientId,
+                name: order.clientName,
+                address: order.clientAddress,
+                phone: order.clientPhone,
+            },
+            cake: {
+                id: order.cakeId,
+                name: order.cakeName,
+                price: parseFloat(order.cakePrice),
+                description: order.cakeDescription,
+                image: order.cakeImage,
+            },
+            orderId: order.orderId,
+            createdAt: order.createdAt,
+            quantity: order.quantity,
+            totalPrice: parseFloat(order.totalPrice),
+        };
+
+        res.status(200).json(formattedOrder);
     } catch (err) {
-        console.log(err)
+        console.log(err);
         res.status(500).send(err.message);
     }
 }
