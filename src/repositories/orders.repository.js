@@ -45,7 +45,7 @@ export async function getOrdersDB(date) {
             k.description AS "cakeDescription",
             k.image AS "cakeImage",
             o.id AS "orderId",
-            o.createdat::DATE AS "createdAt",
+            to_char(o.createdat, 'YYYY-MM-DD HH24:MI') AS "createdAt",
             o.quantity,
             o.totalprice AS "totalPrice"
         FROM orders o
@@ -54,13 +54,9 @@ export async function getOrdersDB(date) {
         ${dateFilter}
     `, values);
 
-    const formattedRows = result.rows.map(row => ({
-        ...row,
-        createdAt: row.createdAt.toISOString().split('T')[0] 
-    }));
-
-    return formattedRows;
+    return result.rows;
 }
+
 
 
 export async function getOrderByIdDB(orderId) {
